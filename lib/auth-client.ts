@@ -1,9 +1,9 @@
 import { createAuthClient } from "better-auth/react";
-import { polarClient } from "@polar-sh/better-auth/client";
 
 export const authClient = createAuthClient({
     baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-    plugins: [polarClient()],
+    // ─── Polar plugin — add back once Polar is configured ───
+    // plugins: [polarClient()],
 });
 
 export const {

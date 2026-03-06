@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { betterFetch } from "@better-fetch/fetch";
 import type { Session } from "better-auth/types";
 
-export async function middleware(req: NextRequest) {
-    // Better Auth provides a clean way to check session in middleware
+export async function proxy(req: NextRequest) {
+    // Better Auth provides a clean way to check session in proxy
     const { data: session } = await betterFetch<Session>(
         `${req.nextUrl.origin}/api/auth/get-session`,
         {

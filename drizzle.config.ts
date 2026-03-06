@@ -5,6 +5,7 @@ export default {
     out: "./drizzle/migrations",
     dialect: "postgresql",
     dbCredentials: {
-        url: process.env.DATABASE_URL || "postgresql://sandbox:sandbox@localhost/sandbox",
+        url: process.env.DATABASE_URL || "postgresql://voxra:voxra123@localhost:5432/voxra",
     },
+
 } satisfies Config;
