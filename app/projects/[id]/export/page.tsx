@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/8bit/button";
 import { Card, CardContent } from "@/components/ui/8bit/card";
 import { Switch } from "@/components/ui/8bit/switch";
-import { Modal } from "@/components/ui/8bit/dialog"; // Assuming we use standard dialog or similar for mock. We'll simulate inline for now.
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 

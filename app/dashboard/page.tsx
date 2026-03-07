@@ -1,7 +1,7 @@
 import { StatsBar } from "@/components/dashboard/StatsBar";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
 import { Button } from "@/components/ui/8bit/button";
-import { EnemyHealthDisplay } from "@/components/ui/8bit/enemy-health-display";
+import EnemyHealthDisplay from "@/components/ui/8bit/enemy-health-display";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -51,9 +51,9 @@ export default async function DashboardPage() {
             </div>
 
             <EnemyHealthDisplay
-                name="MONTHLY LIMIT BOSS"
-                hp={mockStats.videosThisMonth}
-                maxHp={mockStats.creditsRemaining + mockStats.videosThisMonth}
+                enemyName="MONTHLY LIMIT BOSS"
+                currentHealth={mockStats.videosThisMonth}
+                maxHealth={mockStats.creditsRemaining + mockStats.videosThisMonth}
             />
 
             <StatsBar stats={mockStats} />

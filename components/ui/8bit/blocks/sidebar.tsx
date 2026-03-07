@@ -69,3 +69,18 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
+
+// Re-export all sidebar components from the base sidebar module
+export {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarProvider,
+} from "@/components/ui/sidebar";

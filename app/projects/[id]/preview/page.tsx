@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { VideoPlayer } from "@/components/preview/VideoPlayer";
 import { GenerationStatus } from "@/components/shared/GenerationStatus";
-import { RPG_MESSAGES } from "@/lib/dialogue";
+import { RPG_DIALOGUE } from "@/lib/dialogue";
 import { Button } from "@/components/ui/8bit/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -13,7 +13,7 @@ export default function PreviewPage({ params }: { params: { id: string } }) {
     const [status, setStatus] = useState("processing");
     const [phase, setPhase] = useState("tts");
     const [progress, setProgress] = useState(0);
-    const [message, setMessage] = useState(RPG_MESSAGES.tts[0]);
+    const [message, setMessage] = useState(RPG_DIALOGUE.tts[0]);
 
     // Simulate generation polling
     useEffect(() => {
@@ -27,7 +27,7 @@ export default function PreviewPage({ params }: { params: { id: string } }) {
                     clearInterval(interval);
                     setStatus("done");
                     setPhase("done");
-                    setMessage(RPG_MESSAGES.done[0]);
+                    setMessage(RPG_DIALOGUE.done[0]);
                     return 100;
                 }
 
@@ -36,7 +36,7 @@ export default function PreviewPage({ params }: { params: { id: string } }) {
                     currentIdx = newIdx;
                     setPhase(phases[currentIdx]);
                     // Pick rand message
-                    const msgs = (RPG_MESSAGES as any)[phases[currentIdx]];
+                    const msgs = (RPG_DIALOGUE as any)[phases[currentIdx]];
                     setMessage(msgs[Math.floor(Math.random() * msgs.length)]);
                 }
 
