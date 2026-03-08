@@ -1,11 +1,5 @@
 "use client";
 
-import { HealthBar, ManaBar, XpBar } from "@/components/ui/8bit/progress";
-// Note: using distinct style divs depending on phase, as 8bitcn progress bars are likely specific components
-// Since I installed health-bar, mana-bar, xp-bar, I'll use custom styling mimicking them.
-import { useState, useEffect } from "react";
-import { EnemyHealthDisplay } from "@/components/ui/8bit/enemy-health-display";
-
 export function GenerationStatus({
     phase,
     progress,
