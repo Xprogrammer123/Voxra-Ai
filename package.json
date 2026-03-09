@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.1.21",
+    "@google/genai": "^1.44.0",
     "@neondatabase/serverless": "^1.0.2",
     "@polar-sh/better-auth": "^1.8.2",
     "@polar-sh/nextjs": "^0.9.4",
