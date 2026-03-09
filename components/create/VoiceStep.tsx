@@ -1,68 +1,73 @@
 "use client";
 
 import { useProjectStore } from "@/store/useProjectStore";
-import { Card, CardContent } from "@/components/ui/8bit/card";
-import { Badge } from "@/components/ui/8bit/badge";
-import { useState } from "react";
 
-const VOICES = [
-    { id: "v1", name: "Marcus", tag: "NARRATOR", desc: "Deep, authoritative, cinematic.", gender: "M" },
-    { id: "v2", name: "Sarah", tag: "TUTORIAL", desc: "Clear, upbeat, engaging.", gender: "F" },
-    { id: "v3", name: "Atlas", tag: "MYSTERY", desc: "Gritty, low pitch, intense.", gender: "M" },
-    { id: "v4", name: "Nova", tag: "TECH", desc: "Crisp, fast-paced, modern.", gender: "F" },
+const TONES = [
+    { id: "narrator",   label: "NARRATOR",   icon: "🎬", desc: "Deep, authoritative, cinematic." },
+    { id: "tutorial",   label: "TUTORIAL",   icon: "📚", desc: "Clear, upbeat, engaging." },
+    { id: "mystery",    label: "MYSTERY",    icon: "🌑", desc: "Gritty, low pitch, intense." },
+    { id: "energetic",  label: "ENERGETIC",  icon: "⚡", desc: "Fast-paced, hype, modern." },
 ];
 
 export function VoiceStep() {
     const { voiceId, setVoiceId } = useProjectStore();
-    const [playing, setPlaying] = useState<string | null>(null);
-
-    const togglePlay = (e: React.MouseEvent, id: string) => {
-        e.stopPropagation();
-        if (playing === id) setPlaying(null);
-        else setPlaying(id);
-        // Real app: audio.play()
-    };
 
     return (
-        <div className="space-y-6">
-            <div className="text-center mb-6">
-                <h2 className="text-2xl md:text-3xl font-black uppercase text-mp drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">
-                    SELECT YOUR BARD
-                </h2>
-                <p className="text-muted-foreground mt-2 font-sans">
-                    Choose the voice that will narrate your quest.
+        <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                    <span style={{ color: "#209cee" }}>★</span>
+                    <h2 className="text-xl font-black tracking-widest uppercase" style={{ color: "#209cee", textShadow: "2px 2px 0 #000" }}>
+                        SELECT YOUR BARD
+                    </h2>
+                </div>
+                <p className="text-[10px] tracking-widest" style={{ color: "#555" }}>
+                    Veo 3 generates the voice. Pick a tone to guide the narration style.
                 </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
-                {VOICES.map((v) => {
-                    const isSelected = voiceId === v.id;
+            {/* Veo 3 badge */}
+            <div className="flex items-center gap-3 px-4 py-3"
+                style={{ background: "#00001a", border: "2px solid #209cee33" }}>
+                <div className="w-6 h-6 flex items-center justify-center text-[8px] font-black shrink-0"
+                    style={{ background: "#209cee", color: "#000", border: "2px solid #fff" }}>
+                    AI
+                </div>
+                <span className="text-[10px] leading-loose" style={{ color: "#666" }}>
+                    Voice is generated natively by <span style={{ color: "#209cee" }}>Veo 3</span>. No external TTS required.
+                </span>
+            </div>
+
+            {/* Tone selector */}
+            <div className="grid grid-cols-2 gap-3">
+                {TONES.map(t => {
+                    const isSelected = voiceId === t.id;
                     return (
-                        <Card
-                            key={v.id}
-                            className={`border-4 cursor-pointer transition-all ${isSelected
-                                    ? "border-mp bg-mp/10 shadow-[4px_4px_0_0_#209cee] scale-[1.02]"
-                                    : "border-black hover:bg-muted/10 hover:-translate-y-1"
-                                }`}
-                            onClick={() => setVoiceId(v.id)}
+                        <button
+                            key={t.id}
+                            onClick={() => setVoiceId(t.id)}
+                            className="flex flex-col gap-2 p-4 text-left transition-all duration-100"
+                            style={{
+                                background: isSelected ? "#00001a" : "#0a0a0a",
+                                border: `3px solid ${isSelected ? "#209cee" : "#1e1e1e"}`,
+                                boxShadow: isSelected ? "4px 4px 0 #000, 0 0 12px rgba(32,156,238,0.3)" : "none",
+                            }}
                         >
-                            <CardContent className="p-4 flex items-start gap-4">
-                                <button
-                                    className={`w-12 h-12 shrink-0 border-2 border-black flex items-center justify-center text-xl transition-colors ${playing === v.id ? "bg-mp text-black animate-pulse" : "bg-black text-mp hover:bg-muted"
-                                        }`}
-                                    onClick={(e) => togglePlay(e, v.id)}
-                                >
-                                    {playing === v.id ? "⏸" : "▶"}
-                                </button>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex justify-between items-start mb-1">
-                                        <h3 className="font-pixel text-lg truncate">{v.name}</h3>
-                                        <Badge className="bg-background border-black">{v.tag}</Badge>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground font-sans truncate">{v.desc}</p>
-                                </div>
-                            </CardContent>
-                        </Card>
+                            <div className="flex items-center justify-between">
+                                <span className="text-2xl">{t.icon}</span>
+                                {isSelected && (
+                                    <span className="text-[8px] font-black px-2 py-0.5"
+                                        style={{ background: "#209cee", color: "#000" }}>
+                                        EQUIPPED
+                                    </span>
+                                )}
+                            </div>
+                            <span className="text-xs font-black tracking-widest"
+                                style={{ color: isSelected ? "#209cee" : "#555" }}>
+                                {t.label}
+                            </span>
+                            <span className="text-[10px]" style={{ color: "#444" }}>{t.desc}</span>
+                        </button>
                     );
                 })}
             </div>

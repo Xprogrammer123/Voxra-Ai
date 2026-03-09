@@ -11,28 +11,39 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { projectId, scriptText, voiceId, musicId, stylePreset, platform, format } = body;
+        const { projectId, scriptText, stylePreset, platform, format } = body;
 
-        // 1. Insert initial video record into DB
+        if (!projectId || !scriptText) {
+            return Response.json({ error: "Missing required fields" }, { status: 400 });
+        }
+
+        // 1. Insert initial video record
         const [video] = await db.insert(videos).values({
             userId: session.user.id,
             projectId,
             scriptText,
-            voiceId,
-            musicId,
-            stylePreset,
+            stylePreset: stylePreset ?? null,
             status: "processing",
-            platform,
-            phase: "tts",
+            platform: platform ?? "tiktok",
+            phase: "footage",
             progress: 0,
         }).returning();
 
-        // 2. Kick off background generation pipeline
-        // In a real production app we'd use a queue (Inngest, Trigger.dev, etc).
-        // For this hackathon, we'll simulate the orchestrator by hitting our own internal endpoints without awaiting them,
-        // or by letting the client poll through the steps.
-        // For maximum reliability over serverless functions that time out, we'll let the client coordinate the steps.
-        // So this endpoint just creates the db record and returns the ID.
+        // 2. Kick off Veo 3 generation (fire and forget — client polls for status)
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+
+        fetch(`${baseUrl}/api/video`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", cookie: req.headers.get("cookie") ?? "" },
+            body: JSON.stringify({ videoId: video.id, scriptText, platform, format }),
+        }).catch(err => console.error("Failed to kick off video generation:", err));
+
+        // 3. Also generate subtitles immediately from script (no external API needed)
+        fetch(`${baseUrl}/api/subtitles`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", cookie: req.headers.get("cookie") ?? "" },
+            body: JSON.stringify({ videoId: video.id, scriptText }),
+        }).catch(err => console.error("Failed to generate subtitles:", err));
 
         return Response.json({ taskId: video.id });
     } catch (err: any) {

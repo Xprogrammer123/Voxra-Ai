@@ -6,20 +6,25 @@ import Link from "next/link";
 
 const PIXEL_CHARS = ["░", "▒", "▓", "█"];
 
+function seededRandom(seed: number) {
+    const x = Math.sin(seed + 1) * 10000;
+    return x - Math.floor(x);
+}
+
 const STARS = Array.from({ length: 30 }, (_, i) => ({
     id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    delay: Math.random() * 3,
-    duration: 1.5 + Math.random() * 2,
-    char: PIXEL_CHARS[Math.floor(Math.random() * PIXEL_CHARS.length)],
+    x: seededRandom(i * 4) * 100,
+    y: seededRandom(i * 4 + 1) * 100,
+    delay: seededRandom(i * 4 + 2) * 3,
+    duration: 1.5 + seededRandom(i * 4 + 3) * 2,
+    char: PIXEL_CHARS[Math.floor(seededRandom(i * 4 + 4) * PIXEL_CHARS.length)],
 }));
 
 const STATS = [
-    { label: "VIDEOS FORGED", value: "124,000+", color: "#92cc41" },
-    { label: "CREATORS", value: "10,000+", color: "#f7d51d" },
-    { label: "AVG RENDER TIME", value: "< 90s", color: "#209cee" },
-    { label: "PLATFORMS", value: "4", color: "#e76e55" },
+    { label: "VIDEOS FORGED",   value: "124,000+", color: "#92cc41" },
+    { label: "CREATORS",        value: "10,000+",  color: "#f7d51d" },
+    { label: "AVG RENDER TIME", value: "< 90s",    color: "#209cee" },
+    { label: "PLATFORMS",       value: "4",        color: "#e76e55" },
 ];
 
 export function CTASection() {
@@ -62,17 +67,13 @@ export function CTASection() {
             {/* Green ground glow */}
             <div
                 className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none"
-                style={{
-                    background: "radial-gradient(ellipse at 50% 100%, rgba(146,204,65,0.08) 0%, transparent 70%)",
-                }}
+                style={{ background: "radial-gradient(ellipse at 50% 100%, rgba(146,204,65,0.08) 0%, transparent 70%)" }}
             />
 
             {/* Scanlines */}
             <div
                 className="absolute inset-0 pointer-events-none z-10"
-                style={{
-                    background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px)",
-                }}
+                style={{ background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px)" }}
             />
 
             <div className="relative z-20 max-w-4xl mx-auto flex flex-col items-center gap-12 text-center">
@@ -80,27 +81,17 @@ export function CTASection() {
                 {/* Boss encounter label */}
                 <div
                     className="text-[9px] tracking-widest px-4 py-2 border-2"
-                    style={{
-                        color: "#e76e55",
-                        borderColor: "#e76e55",
-                        background: "rgba(231,110,85,0.08)",
-                        animation: "blink-kf 1s step-end infinite",
-                    }}
+                    style={{ color: "#e76e55", borderColor: "#e76e55", background: "rgba(231,110,85,0.08)", animation: "blink-kf 1s step-end infinite" }}
                 >
                     ⚠ FINAL BOSS ENCOUNTER ⚠
                 </div>
 
                 {/* Headline */}
                 <div className="flex flex-col gap-4">
-                    <h2
-                        className="text-4xl md:text-6xl lg:text-7xl font-black uppercase leading-tight"
-                        style={{ textShadow: "4px 4px 0 #000" }}
-                    >
+                    <h2 className="text-4xl md:text-6xl lg:text-7xl font-black uppercase leading-tight" style={{ textShadow: "4px 4px 0 #000" }}>
                         READY TO STOP
                         <br />
-                        <span style={{ color: "#e76e55", textShadow: "4px 4px 0 #000" }}>
-                            WASTING TIME
-                        </span>
+                        <span style={{ color: "#e76e55", textShadow: "4px 4px 0 #000" }}>WASTING TIME</span>
                         <br />
                         EDITING?
                     </h2>
@@ -114,25 +105,17 @@ export function CTASection() {
                 {/* Stats row */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
                     {STATS.map(({ label, value, color }) => (
-                        <div
-                            key={label}
-                            className="flex flex-col items-center gap-2 py-4 px-3 border-2"
-                            style={{ borderColor: "#2a2a2a", background: "#111" }}
-                        >
-                            <span
-                                className="text-xl md:text-2xl font-black"
-                                style={{ color, textShadow: `2px 2px 0 #000` }}
-                            >
+                        <div key={label} className="flex flex-col items-center gap-2 py-4 px-3 border-2"
+                            style={{ borderColor: "#2a2a2a", background: "#111" }}>
+                            <span className="text-xl md:text-2xl font-black" style={{ color, textShadow: "2px 2px 0 #000" }}>
                                 {value}
                             </span>
-                            <span className="text-[8px] tracking-widest" style={{ color: "#555" }}>
-                                {label}
-                            </span>
+                            <span className="text-[8px] tracking-widest" style={{ color: "#555" }}>{label}</span>
                         </div>
                     ))}
                 </div>
 
-                {/* Main CTA button */}
+                {/* CTA button */}
                 <div className="flex flex-col items-center gap-4">
                     <Link href="/sign-up">
                         <Button
@@ -154,22 +137,13 @@ export function CTASection() {
                             ⚔ GENERATE MY FIRST VIDEO
                         </Button>
                     </Link>
-
-                    {/* No card required */}
                     <p className="text-[9px] tracking-widest" style={{ color: "#555" }}>
                         ✦ 5 FREE VIDEOS · NO CARD REQUIRED · NO WATERMARK ✦
                     </p>
                 </div>
 
                 {/* Press start blink */}
-                <p
-                    className="text-[10px] tracking-widest"
-                    style={{
-                        color: "#f7d51d",
-                        opacity: blink ? 1 : 0,
-                        transition: "opacity 0.1s",
-                    }}
-                >
+                <p className="text-[10px] tracking-widest" style={{ color: "#f7d51d", opacity: blink ? 1 : 0, transition: "opacity 0.1s" }}>
                     — PRESS START TO BEGIN YOUR QUEST —
                 </p>
 
@@ -180,11 +154,9 @@ export function CTASection() {
                     <div className="flex-1 h-[2px]" style={{ background: "repeating-linear-gradient(90deg, #2a2a2a 0px, #2a2a2a 8px, transparent 8px, transparent 12px)" }} />
                 </div>
 
-                {/* Footer note */}
                 <p className="text-[9px] tracking-widest" style={{ color: "#333" }}>
                     © 2026 VOXRA · ALL RIGHTS RESERVED · WORDS BECOME REELS
                 </p>
-
             </div>
 
             <style>{`
@@ -197,11 +169,11 @@ export function CTASection() {
                     50%      { opacity: 0; }
                 }
                 @keyframes shake {
-                    0%  { transform: translate(0, 0); }
-                    25% { transform: translate(-2px, 0); }
-                    50% { transform: translate(2px, 0); }
-                    75% { transform: translate(-1px, 0); }
-                    100%{ transform: translate(0, 0); }
+                    0%   { transform: translate(0, 0); }
+                    25%  { transform: translate(-2px, 0); }
+                    50%  { transform: translate(2px, 0); }
+                    75%  { transform: translate(-1px, 0); }
+                    100% { transform: translate(0, 0); }
                 }
             `}</style>
         </section>

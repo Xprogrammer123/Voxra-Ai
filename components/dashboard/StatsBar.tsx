@@ -1,6 +1,11 @@
 "use client";
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/8bit/card";
+const STATS = [
+    { icon: "⚔", label: "THIS MONTH",     valueKey: "videosThisMonth", color: "#e76e55", bg: "#1a0000", border: "#3a0000" },
+    { icon: "📜", label: "TOTAL VIDEOS",   valueKey: "totalVideos",     color: "#209cee", bg: "#00001a", border: "#00003a" },
+    { icon: "🎨", label: "ACTIVE PRESETS", valueKey: "activePresets",   color: "#f7d51d", bg: "#1a1400", border: "#3a2800" },
+    { icon: "💎", label: "CREDITS",        valueKey: "creditsRemaining",color: "#92cc41", bg: "#0a1400", border: "#1a2800" },
+];
 
 interface StatsBarProps {
     videosThisMonth: number;
@@ -12,49 +17,56 @@ interface StatsBarProps {
 export function StatsBar({ stats }: { stats: StatsBarProps }) {
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <Card className="border-4 border-black bg-hp/10">
-                <CardHeader className="p-4 pb-2">
-                    <CardTitle className="text-xs text-muted-foreground uppercase font-pixel tracking-tighter">
-                        <span className="mr-2">⚔</span> THIS MONTH
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                    <div className="text-2xl font-black text-hp drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">{stats.videosThisMonth}</div>
-                </CardContent>
-            </Card>
+            {STATS.map(({ icon, label, valueKey, color, bg, border }) => {
+                const value = stats[valueKey as keyof StatsBarProps];
+                return (
+                    <div
+                        key={valueKey}
+                        style={{
+                            background: bg,
+                            border: `3px solid ${border}`,
+                            boxShadow: `4px 4px 0 #000, 0 0 12px ${color}22`,
+                        }}
+                        className="flex flex-col gap-3 p-4 relative overflow-hidden"
+                    >
+                        {/* Corner glow */}
+                        <div
+                            className="absolute top-0 right-0 w-12 h-12 pointer-events-none"
+                            style={{ background: `radial-gradient(circle at top right, ${color}22, transparent 70%)` }}
+                        />
 
-            <Card className="border-4 border-black bg-mp/10">
-                <CardHeader className="p-4 pb-2">
-                    <CardTitle className="text-xs text-muted-foreground uppercase font-pixel tracking-tighter">
-                        <span className="mr-2">📜</span> TOTAL VIDEOS
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                    <div className="text-2xl font-black text-mp drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">{stats.totalVideos}</div>
-                </CardContent>
-            </Card>
+                        {/* Label */}
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm">{icon}</span>
+                            <span className="text-[9px] tracking-widest uppercase" style={{ color: "#555" }}>
+                                {label}
+                            </span>
+                        </div>
 
-            <Card className="border-4 border-black bg-xp/10">
-                <CardHeader className="p-4 pb-2">
-                    <CardTitle className="text-xs text-muted-foreground uppercase font-pixel tracking-tighter">
-                        <span className="mr-2">🎨</span> ACTIVE PRESETS
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                    <div className="text-2xl font-black text-xp drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">{stats.activePresets}</div>
-                </CardContent>
-            </Card>
+                        {/* Value */}
+                        <div
+                            className="text-3xl font-black leading-none"
+                            style={{
+                                color,
+                                textShadow: `2px 2px 0 #000, 0 0 20px ${color}66`,
+                            }}
+                        >
+                            {value}
+                        </div>
 
-            <Card className="border-4 border-black bg-success/10">
-                <CardHeader className="p-4 pb-2">
-                    <CardTitle className="text-xs text-muted-foreground uppercase font-pixel tracking-tighter">
-                        <span className="mr-2">💎</span> CREDITS
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                    <div className="text-2xl font-black text-success drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">{stats.creditsRemaining}</div>
-                </CardContent>
-            </Card>
+                        {/* Pixel bar */}
+                        <div className="h-[4px] w-full" style={{ background: "#111", border: "1px solid #222" }}>
+                            <div
+                                className="h-full"
+                                style={{
+                                    width: "100%",
+                                    background: `repeating-linear-gradient(90deg, ${color} 0px, ${color} 4px, rgba(0,0,0,0.3) 4px, rgba(0,0,0,0.3) 6px)`,
+                                }}
+                            />
+                        </div>
+                    </div>
+                );
+            })}
         </div>
     );
 }
