@@ -7,14 +7,7 @@ import { headers } from "next/headers";
 
 export async function POST(req: NextRequest) {
     try {
-        // Retry once on Neon cold start timeout
-        let session = null;
-        try {
-            session = await auth.api.getSession({ headers: await headers() });
-        } catch {
-            await new Promise(r => setTimeout(r, 2000));
-            session = await auth.api.getSession({ headers: await headers() });
-        }
+        const session = await auth.api.getSession({ headers: await headers() });
         if (!session) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
@@ -64,15 +57,15 @@ MOOD & TONE:
         // Create video record
         const [video] = await db.insert(videos).values({
             projectId,
-            userId:       session.user.id,
+            userId: session.user.id,
             scriptText,
-            voiceId:      voiceId   ?? null,
-            musicId:      musicId   ?? null,
-            stylePreset:  stylePreset ?? null,
-            platform:     platform  ?? "tiktok",
-            status:       "processing",
-            phase:        "footage",
-            progress:     10,
+            voiceId: voiceId ?? null,
+            musicId: musicId ?? null,
+            stylePreset: stylePreset ?? null,
+            platform: platform ?? "tiktok",
+            status: "processing",
+            phase: "footage",
+            progress: 10,
             runwayTaskId: operation.name ?? null,
         }).returning();
 
