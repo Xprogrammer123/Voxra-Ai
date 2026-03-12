@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { StepIndicator } from "@/components/create/StepIndicator";
 import { ScriptStep } from "@/components/create/ScriptStep";
@@ -10,11 +10,12 @@ import { StyleStep } from "@/components/create/StyleStep";
 import { AssetsStep } from "@/components/create/AssetsStep";
 import { useProjectStore } from "@/store/useProjectStore";
 
-const LOADER_FRAMES = ["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"];
+const LOADER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
-export default function CreateWizardPage({ params }: { params: { id: string } }) {
+export default function CreateWizardPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
     const router = useRouter();
-    const { currentStep, scriptText, voiceId, musicId, stylePreset, nextStep, prevStep, reset } = useProjectStore();
+    const { currentStep, scriptText, voiceId, musicId, stylePreset, assets, nextStep, prevStep, reset } = useProjectStore();
     const [isGenerating, setIsGenerating] = useState(false);
     const [loaderFrame, setLoaderFrame] = useState(0);
     const [error, setError] = useState<string | null>(null);
@@ -44,11 +45,12 @@ export default function CreateWizardPage({ params }: { params: { id: string } })
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    projectId: params.id,
+                    projectId: id,
                     scriptText,
                     voiceId: voiceId || null,
                     musicId: musicId || null,
                     stylePreset: stylePreset || null,
+                    assets: assets.length > 0 ? assets : null,
                     platform: "tiktok",
                     format: "9:16",
                 }),
@@ -61,7 +63,7 @@ export default function CreateWizardPage({ params }: { params: { id: string } })
             }
 
             reset();
-            router.push(`/projects/${params.id}/preview?taskId=${data.taskId}`);
+            router.push(`/projects/${id}/preview?taskId=${data.taskId}`);
         } catch (err: any) {
             setError(err.message || "Something went wrong. Try again.");
             setIsGenerating(false);

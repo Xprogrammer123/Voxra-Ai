@@ -8,6 +8,13 @@
       "when": 1773339719555,
       "tag": "0000_thin_lockjaw",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1773340834705,
+      "tag": "0001_tired_lester",
+      "breakpoints": true
     }
   ]
 }

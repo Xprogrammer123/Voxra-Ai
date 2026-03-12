@@ -4,11 +4,11 @@ import Link from "next/link";
 import { Project } from "@/lib/schema";
 
 const PLATFORM_COLORS: Record<string, string> = {
-    tiktok:   "#e76e55",
-    reels:    "#b06aee",
-    shorts:   "#92cc41",
-    youtube:  "#209cee",
-    default:  "#f7d51d",
+    tiktok: "#e76e55",
+    reels: "#b06aee",
+    shorts: "#92cc41",
+    youtube: "#209cee",
+    default: "#f7d51d",
 };
 
 interface ProjectCardProps {
@@ -97,7 +97,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
             {/* Footer */}
             <div className="flex gap-2 px-4 pb-4">
-                <Link href={`/projects/${project.id}/create`} className="flex-1">
+                <Link href={`/projects/${project.id}`} className="flex-1">
                     <button
                         className="w-full text-xs font-black tracking-widest uppercase py-3 px-4 transition-all duration-150"
                         style={{

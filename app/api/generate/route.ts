@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { projectId, scriptText, voiceId, musicId, stylePreset, platform, format } = await req.json();
+        const { projectId, scriptText, voiceId, musicId, stylePreset, assets, platform, format } = await req.json();
 
         if (!projectId || !scriptText) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -62,6 +62,7 @@ MOOD & TONE:
             voiceId: voiceId ?? null,
             musicId: musicId ?? null,
             stylePreset: stylePreset ?? null,
+            assets: assets ?? null,
             platform: platform ?? "tiktok",
             status: "processing",
             phase: "footage",
