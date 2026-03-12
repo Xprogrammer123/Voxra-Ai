@@ -41,7 +41,7 @@ export function NavBar() {
                         </>
                     ) : (
                         <Link href="/sign-in">
-                            <Button className="text-xs md:text-sm bg-success text-black border-2 border-black hover:bg-success/80 shadow-[2px_2px_0_0_#92cc41]">
+                            <Button className="text-xs md:text-sm bg-success text-white border-2 border-black hover:bg-success/80 shadow-[2px_2px_0_0_#92cc41]">
                                 START QUEST
                             </Button>
                         </Link>
