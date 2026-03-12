@@ -52,7 +52,7 @@ MOOD & TONE:
 
         // Kick off Veo job
         const operation = await ai.models.generateVideos({
-            model: "veo-2.0-generate-001",
+            model: "veo-3.1-generate-preview",
             prompt,
             config: {
                 aspectRatio: format ?? "9:16",
