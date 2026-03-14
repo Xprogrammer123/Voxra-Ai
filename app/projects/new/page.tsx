@@ -17,6 +17,25 @@ const FORMATS = [
     { value: "1:1",  label: "Square 1:1",      icon: "□" },
 ];
 
+const GENERATION_MODES = [
+    {
+        value: "image",
+        label: "Image Slideshow",
+        icon: "🖼",
+        desc: "Free · Imagen 3",
+        color: "#92cc41",
+        detail: "Generates scene images stitched into a video",
+    },
+    {
+        value: "video",
+        label: "AI Video",
+        icon: "🎬",
+        desc: "Paid · Veo 3",
+        color: "#209cee",
+        detail: "Full AI video generation via Veo 3",
+    },
+];
+
 const LOADER_FRAMES = ["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"];
 
 export default function NewProjectPage() {
@@ -27,8 +46,10 @@ export default function NewProjectPage() {
     const [name, setName] = useState("");
     const [platform, setPlatform] = useState("tiktok");
     const [format, setFormat] = useState("9:16");
+    const [generationMode, setGenerationMode] = useState<"image" | "video">("image");
 
     const selectedPlatform = PLATFORMS.find(p => p.value === platform)!;
+    const selectedMode = GENERATION_MODES.find(m => m.value === generationMode)!;
 
     const handleCreate = async () => {
         if (!name || loading) return;
@@ -45,7 +66,7 @@ export default function NewProjectPage() {
             const res = await fetch("/api/projects", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, platform, format }),
+                body: JSON.stringify({ name, platform, format, generationMode }),
             });
 
             if (!res.ok) {
@@ -134,6 +155,7 @@ export default function NewProjectPage() {
 
                 <div className="px-6 py-6 flex flex-col gap-8">
 
+                    {/* Project name */}
                     <div className="flex flex-col gap-2">
                         <label className="text-[9px] tracking-widest uppercase" style={{ color: "#555" }}>
                             PROJECT NAME
@@ -153,6 +175,61 @@ export default function NewProjectPage() {
                         />
                     </div>
 
+                    {/* Generation mode */}
+                    <div className="flex flex-col gap-3">
+                        <label className="text-[9px] tracking-widest uppercase" style={{ color: "#555" }}>
+                            GENERATION MODE
+                        </label>
+                        <div className="grid grid-cols-2 gap-3">
+                            {GENERATION_MODES.map(m => (
+                                <button
+                                    key={m.value}
+                                    onClick={() => setGenerationMode(m.value as "image" | "video")}
+                                    className="flex flex-col gap-2 px-4 py-4 text-left transition-all duration-100"
+                                    style={{
+                                        background: generationMode === m.value ? `${m.color}18` : "#0d0d0d",
+                                        border: `2px solid ${generationMode === m.value ? m.color : "#1e1e1e"}`,
+                                        boxShadow: generationMode === m.value ? "3px 3px 0 #000" : "none",
+                                    }}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xl">{m.icon}</span>
+                                        {generationMode === m.value && (
+                                            <span className="text-[8px] font-black px-1 py-0.5"
+                                                style={{ background: m.color, color: "#000" }}>
+                                                SELECTED
+                                            </span>
+                                        )}
+                                    </div>
+                                    <span className="text-xs font-black tracking-widest uppercase"
+                                        style={{ color: generationMode === m.value ? m.color : "#555" }}>
+                                        {m.label}
+                                    </span>
+                                    <span className="text-[8px] tracking-widest"
+                                        style={{ color: generationMode === m.value ? m.color + "aa" : "#333" }}>
+                                        {m.desc}
+                                    </span>
+                                    <span className="text-[8px] leading-relaxed" style={{ color: "#444" }}>
+                                        {m.detail}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                        {generationMode === "video" && (
+                            <div className="px-3 py-2 text-[9px] tracking-widest"
+                                style={{ background: "#00001a", border: "1px solid #209cee33", color: "#209cee88" }}>
+                                ⚠ REQUIRES BILLING — Veo 3 is a paid model
+                            </div>
+                        )}
+                        {generationMode === "image" && (
+                            <div className="px-3 py-2 text-[9px] tracking-widest"
+                                style={{ background: "#001400", border: "1px solid #92cc4133", color: "#92cc4188" }}>
+                                ✓ FREE TIER — Imagen 3 + FFmpeg slideshow pipeline
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Platform */}
                     <div className="flex flex-col gap-3">
                         <label className="text-[9px] tracking-widest uppercase" style={{ color: "#555" }}>
                             TARGET PLATFORM
@@ -174,6 +251,7 @@ export default function NewProjectPage() {
                         </div>
                     </div>
 
+                    {/* Format */}
                     <div className="flex flex-col gap-3">
                         <label className="text-[9px] tracking-widest uppercase" style={{ color: "#555" }}>
                             VIDEO FORMAT
@@ -197,6 +275,7 @@ export default function NewProjectPage() {
 
                 </div>
 
+                {/* Footer */}
                 <div className="px-6 py-4 flex items-center justify-between"
                     style={{ borderTop: "2px solid #1a1a1a", background: "#0d0d0d" }}>
                     <div className="flex flex-col gap-1">
@@ -204,7 +283,7 @@ export default function NewProjectPage() {
                             <>
                                 <span className="text-[9px] tracking-widest" style={{ color: "#555" }}>READY TO FORGE</span>
                                 <span className="text-xs font-black" style={{ color: selectedPlatform.color }}>
-                                    {name} · {platform.toUpperCase()} · {format}
+                                    {name} · {platform.toUpperCase()} · {format} · {selectedMode.label.toUpperCase()}
                                 </span>
                             </>
                         )}
