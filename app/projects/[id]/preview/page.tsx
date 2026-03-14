@@ -1,26 +1,26 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 const PHASE_LABELS: Record<string, string> = {
-    footage:  "SUMMONING VEO 3",
+    footage: "SUMMONING VEO 3",
     subtitles: "FORGING SUBTITLES",
-    assembly:  "ASSEMBLING FOOTAGE",
-    done:      "LOOT ACQUIRED",
-    failed:    "QUEST FAILED",
+    assembly: "ASSEMBLING FOOTAGE",
+    done: "LOOT ACQUIRED",
+    failed: "QUEST FAILED",
 };
 
 const PHASE_MESSAGES: Record<string, string[]> = {
-    footage:   ["Veo 3 is painting your world...", "AI neurons firing at full power...", "Rendering cinematic magic..."],
+    footage: ["Veo 3 is painting your world...", "AI neurons firing at full power...", "Rendering cinematic magic..."],
     subtitles: ["Carving words into stone...", "Timing the narrator's cadence..."],
-    assembly:  ["Stitching the final reel...", "Almost there, adventurer..."],
-    done:      ["Your video has been forged!", "The quest is complete!"],
-    failed:    ["Something went wrong in the forge...", "The spirits were not cooperative..."],
+    assembly: ["Stitching the final reel...", "Almost there, adventurer..."],
+    done: ["Your video has been forged!", "The quest is complete!"],
+    failed: ["Something went wrong in the forge...", "The spirits were not cooperative..."],
 };
 
-const LOADER_FRAMES = ["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"];
+const LOADER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
 function PixelBar({ pct, color }: { pct: number; color: string }) {
     return (
@@ -36,7 +36,8 @@ function PixelBar({ pct, color }: { pct: number; color: string }) {
     );
 }
 
-export default function PreviewPage({ params }: { params: { id: string } }) {
+export default function PreviewPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
     const router = useRouter();
     const searchParams = useSearchParams();
     const taskId = searchParams.get("taskId");
@@ -72,7 +73,7 @@ export default function PreviewPage({ params }: { params: { id: string } }) {
                 setProgress(data.progress ?? 0);
 
                 if (data.status === "done") {
-                    setOutput(data.output);
+                    setOutput(data.outputUrls);
                     clearInterval(pollRef.current!);
                     clearInterval(loaderRef.current!);
                 }
@@ -309,7 +310,7 @@ export default function PreviewPage({ params }: { params: { id: string } }) {
                             )}
 
                             <div style={{ borderTop: "2px solid #1a2e00" }} className="pt-4 flex flex-col gap-3">
-                                <Link href={`/projects/${params.id}/export`} className="w-full">
+                                <Link href={`/projects/${id}/export`} className="w-full">
                                     <button
                                         className="w-full text-sm font-black tracking-widest uppercase py-4 transition-all duration-150"
                                         style={{

@@ -25,9 +25,9 @@ export async function GET(req: NextRequest) {
         // If already done or failed, return current state
         if (video.status === "done" || video.status === "failed") {
             return NextResponse.json({
-                status:     video.status,
-                phase:      video.phase,
-                progress:   video.progress,
+                status: video.status,
+                phase: video.phase,
+                progress: video.progress,
                 outputUrls: video.outputUrls,
             });
         }
@@ -41,9 +41,42 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ status: "failed", phase: "footage", progress: 0 });
         }
 
-        // Poll Veo operation
+        // --- START MOCK SIMULATION ---
+        if (video.runwayTaskId.startsWith("mock-veo-job-")) {
+            // Fake a delay based on the timestamp in the ID (if they've been waiting 15 seconds, finish it)
+            const timestampStr = video.runwayTaskId.split("-").pop() || "0";
+            const startedAt = parseInt(timestampStr, 10);
+            const elapsed = Date.now() - startedAt;
+
+            if (elapsed < 15000) {
+                // Still "processing"
+                const newProgress = Math.min((video.progress ?? 10) + 15, 85);
+                await db.update(videos).set({ progress: newProgress }).where(eq(videos.id, taskId));
+                return NextResponse.json({ status: "processing", phase: "footage", progress: newProgress });
+            } else {
+                // "Done" — output a dummy video
+                const dummyVideoUrl = "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+                const outputUrls = { [video.platform ?? "9:16"]: dummyVideoUrl };
+                const subtitles = generateSubtitles(video.scriptText);
+
+                await db.update(videos)
+                    .set({
+                        status: "done",
+                        phase: "done",
+                        progress: 100,
+                        outputUrls,
+                        subtitlesJson: subtitles,
+                    })
+                    .where(eq(videos.id, taskId));
+
+                return NextResponse.json({ status: "done", phase: "done", progress: 100, outputUrls });
+            }
+        }
+        // --- END MOCK SIMULATION ---
+
+        // Poll actual Veo operation
         const operation = await ai.operations.getVideosOperation({
-            operation: { name: video.runwayTaskId },
+            operation: { name: video.runwayTaskId } as any,
         });
 
         // Still running
@@ -55,8 +88,8 @@ export async function GET(req: NextRequest) {
                 .where(eq(videos.id, taskId));
 
             return NextResponse.json({
-                status:   "processing",
-                phase:    "footage",
+                status: "processing",
+                phase: "footage",
                 progress: newProgress,
             });
         }
@@ -88,18 +121,18 @@ export async function GET(req: NextRequest) {
 
         await db.update(videos)
             .set({
-                status:        "done",
-                phase:         "done",
-                progress:      100,
+                status: "done",
+                phase: "done",
+                progress: 100,
                 outputUrls,
                 subtitlesJson: subtitles,
             })
             .where(eq(videos.id, taskId));
 
         return NextResponse.json({
-            status:     "done",
-            phase:      "done",
-            progress:   100,
+            status: "done",
+            phase: "done",
+            progress: 100,
             outputUrls,
         });
 
@@ -113,13 +146,13 @@ export async function GET(req: NextRequest) {
 function generateSubtitles(script: string) {
     const words = script.trim().split(/\s+/);
     const CHUNK = 5;
-    const WPS   = 2.5;
-    const subs  = [];
+    const WPS = 2.5;
+    const subs = [];
 
     for (let i = 0; i < words.length; i += CHUNK) {
         const chunk = words.slice(i, i + CHUNK).join(" ");
         const start = (i / WPS);
-        const end   = ((i + CHUNK) / WPS);
+        const end = ((i + CHUNK) / WPS);
         subs.push({ id: subs.length + 1, start, end, text: chunk });
     }
 

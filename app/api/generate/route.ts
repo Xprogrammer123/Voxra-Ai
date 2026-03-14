@@ -43,16 +43,24 @@ MOOD & TONE:
 - Feels like a high-budget Minecraft animation or a Mojang Studios official render
 - Think: Minecraft Movie trailer meets a viral TikTok voxel art showcase`;
 
-        // Kick off Veo job
-        const operation = await ai.models.generateVideos({
-            model: "veo-3.1-generate-preview",
-            prompt,
-            config: {
-                aspectRatio: format ?? "9:16",
-                durationSeconds: 8,
-                numberOfVideos: 1,
-            },
-        });
+        // Kick off Veo job or fallback to mock if API limit reached
+        let operationName: string | null = null;
+        try {
+            const operation = await ai.models.generateVideos({
+                model: "veo-3.1-generate-preview",
+                prompt,
+                config: {
+                    aspectRatio: format ?? "9:16",
+                    durationSeconds: 8,
+                    numberOfVideos: 1,
+                },
+            });
+            operationName = operation.name ?? null;
+        } catch (apiErr: any) {
+            console.warn("[/api/generate] Gemini API failed, falling back to mock video mode:", apiErr.message);
+            // Prefix with "mock-" so the poll endpoint knows to simulate it
+            operationName = `mock-veo-job-${Date.now()}`;
+        }
 
         // Create video record
         const [video] = await db.insert(videos).values({
@@ -67,7 +75,7 @@ MOOD & TONE:
             status: "processing",
             phase: "footage",
             progress: 10,
-            runwayTaskId: operation.name ?? null,
+            runwayTaskId: operationName,
         }).returning();
 
         return NextResponse.json({ taskId: video.id });

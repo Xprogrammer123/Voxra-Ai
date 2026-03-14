@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { Project } from "@/lib/schema";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const PLATFORM_COLORS: Record<string, string> = {
     tiktok: "#e76e55",
@@ -22,6 +24,21 @@ export function ProjectCard({ project }: ProjectCardProps) {
     const platformKey = project.platform?.toLowerCase() ?? "default";
     const color = PLATFORM_COLORS[platformKey] ?? PLATFORM_COLORS.default;
     const isLow = healthPct <= 30;
+
+    const router = useRouter();
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDelete = async () => {
+        if (!confirm("Are you sure you want to delete this quest? This cannot be undone.")) return;
+        setIsDeleting(true);
+        try {
+            await fetch(`/api/projects/${project.id}`, { method: "DELETE" });
+            router.refresh();
+        } catch (err) {
+            console.error(err);
+            setIsDeleting(false);
+        }
+    };
 
     return (
         <div
@@ -97,7 +114,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
             {/* Footer */}
             <div className="flex gap-2 px-4 pb-4">
-                <Link href={`/projects/${project.id}`} className="flex-1">
+                <Link href={`/projects/${project.id}/preview`} className="flex-1">
                     <button
                         className="w-full text-xs font-black tracking-widest uppercase py-3 px-4 transition-all duration-150"
                         style={{
@@ -119,7 +136,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
                     </button>
                 </Link>
                 <button
-                    className="shrink-0 px-3 py-3 text-sm font-black transition-all duration-150"
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="shrink-0 px-3 py-3 text-sm font-black transition-all duration-150 disabled:opacity-50"
                     title="Delete Project"
                     style={{
                         background: "#1a0000",
@@ -128,15 +147,17 @@ export function ProjectCard({ project }: ProjectCardProps) {
                         boxShadow: "3px 3px 0 #000",
                     }}
                     onMouseEnter={e => {
+                        if (isDeleting) return;
                         (e.currentTarget as HTMLElement).style.background = "#e76e55";
                         (e.currentTarget as HTMLElement).style.color = "#000";
                     }}
                     onMouseLeave={e => {
+                        if (isDeleting) return;
                         (e.currentTarget as HTMLElement).style.background = "#1a0000";
                         (e.currentTarget as HTMLElement).style.color = "#e76e55";
                     }}
                 >
-                    🗑
+                    {isDeleting ? "..." : "🗑"}
                 </button>
             </div>
         </div>
